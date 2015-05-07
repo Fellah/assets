@@ -21,6 +21,8 @@ var {{.Name}} = map[string]string {
 }
 `
 
+var dir string
+
 // Data for template rendering.
 var tplData struct {
 	Name   string
@@ -28,13 +30,12 @@ var tplData struct {
 }
 
 func main() {
-	dir := getWorkingDir()
+	dir = getWorkingDir()
 
 	tplData.Name = getName(dir)
 	tplData.Assets = make(map[string]string)
 
 	filepath.Walk(dir, walk)
-
 	t := template.Must(template.New(tplData.Name).Parse(tpl))
 
 	out := getOutput(dir)
@@ -102,10 +103,16 @@ func walk(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			log.Println(err)
 			return err
-		} else {
-			// TODO: Escape back quotes.
-			tplData.Assets[path] = string(content)
 		}
+
+		k, err := filepath.Rel(dir, path)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+
+		// TODO: Escape back quotes.
+		tplData.Assets[k] = string(content)
 	}
 
 	return nil
