@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"io/ioutil"
 	"log"
@@ -111,7 +112,8 @@ func walk(path string, fi os.FileInfo, err error) error {
 			return err
 		}
 
-		// TODO: Escape back quotes.
+		// Escape back quotes.
+		content = bytes.Replace(content, []byte("`"), []byte("` + \"`\" + `"), -1)
 		tplData.Assets[k] = string(content)
 	}
 
