@@ -1,7 +1,5 @@
-install: format
+install:
+	go fmt
 	go vet
 	go test
-	go install -gcflags "-N -l"
-
-format:
-	go fmt
+	go install -gcflags
